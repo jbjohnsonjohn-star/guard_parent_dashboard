@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { X } from 'lucide-react';
 
 interface AddDeviceModalProps {
   open: boolean;
@@ -9,7 +10,7 @@ interface AddDeviceModalProps {
   darkMode: boolean;
 }
 
-export default function AddDeviceModal({ open, onClose, onSubmit, darkMode }: AddDeviceModalProps) {
+export default function AddDeviceModal({ open, onClose, onSubmit }: AddDeviceModalProps) {
   const [pairingCode, setPairingCode] = useState('');
   const [deviceName, setDeviceName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -40,48 +41,122 @@ export default function AddDeviceModal({ open, onClose, onSubmit, darkMode }: Ad
   };
 
   return (
-    <div className="fixed inset-0 z-[60] bg-black/50 flex items-center justify-center px-6">
-      <div className={`w-full max-w-sm rounded-2xl border p-5 ${darkMode ? 'bg-zinc-900 border-zinc-800' : 'bg-white border-gray-200'}`}>
-        <h2 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Add Device</h2>
-        <p className={`text-xs mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+    <div style={{ 
+      position: 'fixed', 
+      inset: 0, 
+      zIndex: 60, 
+      background: 'rgba(0, 0, 0, 0.5)', 
+      display: 'flex', 
+      alignItems: 'center', 
+      justifyContent: 'center', 
+      padding: '1.5rem' 
+    }}>
+      <div style={{ 
+        width: '100%', 
+        maxWidth: 400, 
+        background: 'var(--dashboard-card)', 
+        border: 'var(--nb-border)',
+        boxShadow: 'var(--nb-shadow)',
+        padding: '1.5rem',
+      }}>
+        {/* Header */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+          <h2 style={{ fontSize: '1.125rem', fontWeight: 700, color: 'var(--dashboard-text)', margin: 0 }}>
+            Add Device
+          </h2>
+          <button
+            onClick={onClose}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              padding: '0.25rem',
+              cursor: 'pointer',
+              color: 'var(--dashboard-text-muted)',
+            }}
+          >
+            <X size={20} />
+          </button>
+        </div>
+
+        <p style={{ fontSize: '0.875rem', color: 'var(--dashboard-text-muted)', marginBottom: '1.5rem' }}>
           Pair smartwatch using a 6-character code.
         </p>
 
-        <div className="mt-4 space-y-3">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1rem' }}>
           <input
             value={pairingCode}
             onChange={(e) => setPairingCode(e.target.value.replace(/\s+/g, '').toUpperCase())}
             maxLength={6}
-            placeholder="Pairing Code"
-            className={`w-full rounded-lg border px-3 py-2 text-sm font-mono tracking-widest ${
-              darkMode ? 'bg-black border-zinc-700 text-white' : 'bg-white border-gray-300 text-gray-900'
-            }`}
+            placeholder="PAIRING CODE"
+            style={{
+              width: '100%',
+              padding: '0.75rem',
+              border: 'var(--nb-border)',
+              background: 'var(--dashboard-card)',
+              fontSize: '1rem',
+              fontFamily: 'var(--font-mono)',
+              letterSpacing: '0.15em',
+              textAlign: 'center',
+              color: 'var(--dashboard-text)',
+            }}
           />
           <input
             value={deviceName}
             onChange={(e) => setDeviceName(e.target.value)}
             placeholder="Device Name (optional)"
-            className={`w-full rounded-lg border px-3 py-2 text-sm ${
-              darkMode ? 'bg-black border-zinc-700 text-white' : 'bg-white border-gray-300 text-gray-900'
-            }`}
+            style={{
+              width: '100%',
+              padding: '0.75rem',
+              border: 'var(--nb-border)',
+              background: 'var(--dashboard-card)',
+              fontSize: '0.875rem',
+              color: 'var(--dashboard-text)',
+            }}
           />
         </div>
 
-        {error && <p className="text-xs text-red-500 mt-3">{error}</p>}
+        {error && (
+          <p style={{ 
+            fontSize: '0.8125rem', 
+            color: '#ef4444', 
+            marginBottom: '1rem',
+            padding: '0.5rem 0.75rem',
+            background: '#fef2f2',
+            border: '1px solid #ef4444',
+          }}>
+            {error}
+          </p>
+        )}
 
-        <div className="mt-4 flex gap-2">
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
           <button
             onClick={onClose}
-            className={`flex-1 py-2 rounded-lg text-sm font-semibold ${
-              darkMode ? 'bg-zinc-800 text-gray-200' : 'bg-gray-100 text-gray-800'
-            }`}
+            style={{
+              padding: '0.75rem',
+              background: 'var(--dashboard-card)',
+              color: 'var(--dashboard-text)',
+              border: 'var(--nb-border)',
+              fontWeight: 600,
+              fontSize: '0.875rem',
+              cursor: 'pointer',
+            }}
           >
             Cancel
           </button>
           <button
             onClick={handleSubmit}
             disabled={isLoading}
-            className="flex-1 py-2 rounded-lg text-sm font-semibold bg-blue-600 text-white disabled:opacity-70"
+            style={{
+              padding: '0.75rem',
+              background: 'var(--nb-button)',
+              color: '#1a1a1a',
+              border: 'var(--nb-border)',
+              boxShadow: 'var(--nb-shadow-sm)',
+              fontWeight: 700,
+              fontSize: '0.875rem',
+              cursor: isLoading ? 'wait' : 'pointer',
+              opacity: isLoading ? 0.7 : 1,
+            }}
           >
             {isLoading ? 'Connecting...' : 'Connect'}
           </button>

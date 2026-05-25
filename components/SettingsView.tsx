@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Plus, Trash2, Watch, LogOut } from 'lucide-react';
+import { Plus, Trash2, Smartphone, LogOut } from 'lucide-react';
 import { PairedDevice } from '@/types/device';
 
 interface SettingsViewProps {
@@ -34,7 +34,8 @@ export default function SettingsView({
         {/* Add Device Button */}
         <div style={{ 
           background: 'var(--dashboard-card)', 
-          border: '1px solid var(--dashboard-border)',
+          border: 'var(--nb-border)',
+          boxShadow: 'var(--nb-shadow)',
           padding: '1.25rem',
           marginBottom: '1rem',
         }}>
@@ -50,10 +51,11 @@ export default function SettingsView({
               gap: '0.5rem',
               width: '100%',
               padding: '0.75rem',
-              background: '#1a1a1a',
-              color: '#fff',
-              border: 'none',
-              fontWeight: 600,
+              background: 'var(--nb-button)',
+              color: '#1a1a1a',
+              border: 'var(--nb-border)',
+              boxShadow: 'var(--nb-shadow-sm)',
+              fontWeight: 700,
               fontSize: '0.875rem',
               cursor: 'pointer',
               textTransform: 'none',
@@ -82,7 +84,8 @@ export default function SettingsView({
                   key={device.id}
                   style={{
                     background: 'var(--dashboard-card)',
-                    border: '1px solid var(--dashboard-border)',
+                    border: 'var(--nb-border)',
+                    boxShadow: 'var(--nb-shadow-sm)',
                     padding: '1rem',
                     display: 'flex',
                     alignItems: 'center',
@@ -93,12 +96,16 @@ export default function SettingsView({
                     <div style={{ 
                       width: 36, 
                       height: 36, 
-                      background: 'var(--dashboard-bg)', 
+                      background: 'var(--nb-button)', 
+                      border: 'var(--nb-border)',
                       display: 'flex', 
                       alignItems: 'center', 
-                      justifyContent: 'center' 
+                      justifyContent: 'center',
+                      fontWeight: 700,
+                      fontSize: '0.875rem',
+                      color: '#1a1a1a',
                     }}>
-                      <Watch size={18} color="var(--dashboard-text)" />
+                      {device.childName.charAt(0).toUpperCase()}
                     </div>
                     <div>
                       <p style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--dashboard-text)', margin: 0 }}>

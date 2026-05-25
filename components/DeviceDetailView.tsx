@@ -126,7 +126,7 @@ function DeviceDetailView({
         {/* Header */}
         <div style={{ 
           padding: '1.25rem 1.5rem', 
-          borderBottom: '1px solid var(--dashboard-border)',
+          borderBottom: 'var(--nb-border)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
@@ -136,13 +136,14 @@ function DeviceDetailView({
             <div style={{ 
               width: 48, 
               height: 48, 
-              background: 'var(--dashboard-bg)', 
+              background: 'var(--nb-button)', 
+              border: 'var(--nb-border)',
               display: 'flex', 
               alignItems: 'center', 
               justifyContent: 'center',
               fontWeight: 700,
               fontSize: '1.25rem',
-              color: 'var(--dashboard-text)',
+              color: '#1a1a1a',
             }}>
               {device.childName.charAt(0).toUpperCase()}
             </div>
@@ -182,7 +183,7 @@ function DeviceDetailView({
         {/* Tabs */}
         <div style={{ 
           display: 'flex', 
-          borderBottom: '1px solid var(--dashboard-border)',
+          borderBottom: 'var(--nb-border)',
           background: 'var(--dashboard-card)',
         }}>
           {(['overview', 'alerts'] as const).map(tab => (
@@ -192,11 +193,11 @@ function DeviceDetailView({
               style={{
                 flex: 1,
                 padding: '0.75rem',
-                background: 'transparent',
+                background: activeTab === tab ? 'var(--nb-button)' : 'transparent',
                 border: 'none',
-                borderBottom: activeTab === tab ? '2px solid var(--dashboard-text)' : '2px solid transparent',
-                color: activeTab === tab ? 'var(--dashboard-text)' : 'var(--dashboard-text-muted)',
-                fontWeight: activeTab === tab ? 600 : 500,
+                borderBottom: activeTab === tab ? '2px solid #1a1a1a' : '2px solid transparent',
+                color: activeTab === tab ? '#1a1a1a' : 'var(--dashboard-text-muted)',
+                fontWeight: activeTab === tab ? 700 : 500,
                 fontSize: '0.875rem',
                 cursor: 'pointer',
                 textTransform: 'capitalize',
@@ -215,12 +216,13 @@ function DeviceDetailView({
               {/* Live Map */}
               <div style={{ 
                 background: 'var(--dashboard-card)', 
-                border: '1px solid var(--dashboard-border)',
+                border: 'var(--nb-border)',
+                boxShadow: 'var(--nb-shadow-sm)',
                 overflow: 'hidden',
               }}>
                 <div style={{ 
                   padding: '0.75rem 1rem', 
-                  borderBottom: '1px solid var(--dashboard-border)',
+                  borderBottom: 'var(--nb-border)',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '0.5rem',
@@ -236,7 +238,7 @@ function DeviceDetailView({
                 {device.coordinates && (
                   <div style={{ 
                     padding: '0.5rem 1rem', 
-                    borderTop: '1px solid var(--dashboard-border)',
+                    borderTop: 'var(--nb-border)',
                     fontSize: '0.75rem',
                     color: 'var(--dashboard-text-muted)',
                     fontFamily: 'var(--font-mono)',
@@ -249,7 +251,8 @@ function DeviceDetailView({
               {/* Heart Rate Chart */}
               <div style={{ 
                 background: 'var(--dashboard-card)', 
-                border: '1px solid var(--dashboard-border)',
+                border: 'var(--nb-border)',
+                boxShadow: 'var(--nb-shadow-sm)',
                 padding: '1rem',
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
@@ -279,7 +282,8 @@ function DeviceDetailView({
                 {/* Steps */}
                 <div style={{ 
                   background: 'var(--dashboard-card)', 
-                  border: '1px solid var(--dashboard-border)',
+                  border: 'var(--nb-border)',
+                  boxShadow: 'var(--nb-shadow-sm)',
                   padding: '1rem',
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
@@ -294,7 +298,8 @@ function DeviceDetailView({
                 {/* Battery */}
                 <div style={{ 
                   background: 'var(--dashboard-card)', 
-                  border: '1px solid var(--dashboard-border)',
+                  border: 'var(--nb-border)',
+                  boxShadow: 'var(--nb-shadow-sm)',
                   padding: '1rem',
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
@@ -319,7 +324,8 @@ function DeviceDetailView({
                 {/* Velocity */}
                 <div style={{ 
                   background: 'var(--dashboard-card)', 
-                  border: '1px solid var(--dashboard-border)',
+                  border: 'var(--nb-border)',
+                  boxShadow: 'var(--nb-shadow-sm)',
                   padding: '1rem',
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
@@ -335,7 +341,8 @@ function DeviceDetailView({
                 {/* Last Update */}
                 <div style={{ 
                   background: 'var(--dashboard-card)', 
-                  border: '1px solid var(--dashboard-border)',
+                  border: 'var(--nb-border)',
+                  boxShadow: 'var(--nb-shadow-sm)',
                   padding: '1rem',
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
@@ -354,7 +361,8 @@ function DeviceDetailView({
               {/* Device Info */}
               <div style={{ 
                 background: 'var(--dashboard-card)', 
-                border: '1px solid var(--dashboard-border)',
+                border: 'var(--nb-border)',
+                boxShadow: 'var(--nb-shadow-sm)',
                 padding: '1rem',
               }}>
                 <p style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--dashboard-text-muted)', marginBottom: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.02em' }}>
@@ -381,7 +389,8 @@ function DeviceDetailView({
               {deviceAlerts.length === 0 ? (
                 <div style={{ 
                   background: 'var(--dashboard-card)', 
-                  border: '1px solid var(--dashboard-border)',
+                  border: 'var(--nb-border)',
+                  boxShadow: 'var(--nb-shadow-sm)',
                   padding: '2rem',
                   textAlign: 'center',
                 }}>
@@ -398,8 +407,9 @@ function DeviceDetailView({
                       key={alert.id}
                       style={{
                         background: 'var(--dashboard-card)',
-                        border: '1px solid var(--dashboard-border)',
-                        borderLeft: `3px solid ${alert.level === 'critical' ? '#ef4444' : alert.level === 'warning' ? '#f97316' : '#3b82f6'}`,
+                        border: 'var(--nb-border)',
+                        borderLeft: `4px solid ${alert.level === 'critical' ? '#ef4444' : alert.level === 'warning' ? '#f97316' : '#3b82f6'}`,
+                        boxShadow: 'var(--nb-shadow-sm)',
                         padding: '0.75rem 1rem',
                       }}
                     >

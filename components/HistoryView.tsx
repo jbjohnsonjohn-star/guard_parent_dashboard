@@ -71,10 +71,11 @@ export default function HistoryView({ token, watchId }: HistoryViewProps) {
             onClick={() => setSelectedRange(range)}
             style={{
               padding: '0.5rem 1rem',
-              background: selectedRange === range ? '#1a1a1a' : 'var(--dashboard-card)',
-              color: selectedRange === range ? '#fff' : 'var(--dashboard-text)',
-              border: '1px solid var(--dashboard-border)',
-              fontWeight: 500,
+              background: selectedRange === range ? 'var(--nb-button)' : 'var(--dashboard-card)',
+              color: selectedRange === range ? '#1a1a1a' : 'var(--dashboard-text)',
+              border: 'var(--nb-border)',
+              boxShadow: selectedRange === range ? 'var(--nb-shadow-sm)' : 'none',
+              fontWeight: selectedRange === range ? 700 : 500,
               fontSize: '0.8125rem',
               cursor: 'pointer',
               textTransform: 'none',
@@ -90,7 +91,8 @@ export default function HistoryView({ token, watchId }: HistoryViewProps) {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem', marginBottom: '1.5rem' }}>
         <div style={{ 
           background: 'var(--dashboard-card)', 
-          border: '1px solid var(--dashboard-border)',
+          border: 'var(--nb-border)',
+          boxShadow: 'var(--nb-shadow-sm)',
           padding: '1rem',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
@@ -104,7 +106,8 @@ export default function HistoryView({ token, watchId }: HistoryViewProps) {
 
         <div style={{ 
           background: 'var(--dashboard-card)', 
-          border: '1px solid var(--dashboard-border)',
+          border: 'var(--nb-border)',
+          boxShadow: 'var(--nb-shadow-sm)',
           padding: '1rem',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
@@ -118,7 +121,8 @@ export default function HistoryView({ token, watchId }: HistoryViewProps) {
 
         <div style={{ 
           background: 'var(--dashboard-card)', 
-          border: '1px solid var(--dashboard-border)',
+          border: 'var(--nb-border)',
+          boxShadow: 'var(--nb-shadow-sm)',
           padding: '1rem',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
@@ -144,7 +148,8 @@ export default function HistoryView({ token, watchId }: HistoryViewProps) {
         ) : telemetry.length === 0 ? (
           <div style={{ 
             background: 'var(--dashboard-card)', 
-            border: '1px solid var(--dashboard-border)',
+            border: 'var(--nb-border)',
+            boxShadow: 'var(--nb-shadow)',
             padding: '2rem',
             textAlign: 'center',
           }}>
@@ -159,7 +164,8 @@ export default function HistoryView({ token, watchId }: HistoryViewProps) {
                 key={log.id}
                 style={{
                   background: 'var(--dashboard-card)',
-                  border: '1px solid var(--dashboard-border)',
+                  border: 'var(--nb-border)',
+                  boxShadow: 'var(--nb-shadow-sm)',
                   padding: '0.75rem 1rem',
                   display: 'flex',
                   alignItems: 'center',

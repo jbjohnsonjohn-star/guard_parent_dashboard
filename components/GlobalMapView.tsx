@@ -31,13 +31,14 @@ const createMarkerIcon = (status: string, childName: string) => {
         <div style="
           width: 40px;
           height: 40px;
-          background-color: ${color};
+          background-color: #f5c518;
+          border: 2px solid #1a1a1a;
           display: flex;
           align-items: center;
           justify-content: center;
           box-shadow: 2px 2px 0px 0px rgba(0,0,0,1);
-          font-weight: 600;
-          color: white;
+          font-weight: 700;
+          color: #1a1a1a;
           font-size: 14px;
           font-family: 'Geist', sans-serif;
         ">
@@ -48,12 +49,12 @@ const createMarkerIcon = (status: string, childName: string) => {
             ? `
           <div style="
             position: absolute;
-            width: 8px;
-            height: 8px;
+            width: 10px;
+            height: 10px;
             background: ${color};
-            top: -2px;
-            right: -2px;
-            border: 2px solid white;
+            border: 2px solid #1a1a1a;
+            top: -4px;
+            right: -4px;
           "></div>
         `
             : ''
@@ -137,12 +138,12 @@ const DeviceMarker = memo(function DeviceMarker({ device, onDeviceSelect }: Devi
               style={{
                 marginTop: '0.75rem',
                 width: '100%',
-                background: '#1a1a1a',
-                color: '#fff',
+                background: '#f5c518',
+                color: '#1a1a1a',
                 padding: '0.5rem',
-                border: 'none',
+                border: '2px solid #1a1a1a',
                 fontSize: '0.75rem',
-                fontWeight: 600,
+                fontWeight: 700,
                 cursor: 'pointer',
               }}
             >
@@ -195,7 +196,8 @@ function GlobalMapView({ devices, onDeviceSelect }: GlobalMapViewProps) {
         flex: 1, 
         minHeight: 400,
         background: 'var(--dashboard-card)',
-        border: '1px solid var(--dashboard-border)',
+        border: 'var(--nb-border)',
+        boxShadow: 'var(--nb-shadow)',
         overflow: 'hidden',
       }}>
         <MapContainer center={initialViewRef.current.center} zoom={12} style={{ width: '100%', height: '100%' }}>

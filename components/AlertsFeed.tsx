@@ -54,7 +54,8 @@ export default function AlertsFeed({ alerts }: AlertsFeedProps) {
         {alerts.length === 0 ? (
           <div style={{ 
             background: 'var(--dashboard-card)', 
-            border: '1px solid var(--dashboard-border)',
+            border: 'var(--nb-border)',
+            boxShadow: 'var(--nb-shadow)',
             padding: '3rem',
             textAlign: 'center',
           }}>
@@ -72,8 +73,9 @@ export default function AlertsFeed({ alerts }: AlertsFeedProps) {
               key={alert.id}
               style={{
                 background: 'var(--dashboard-card)',
-                border: '1px solid var(--dashboard-border)',
-                borderLeft: `3px solid ${getAlertBorderColor(alert.level)}`,
+                border: 'var(--nb-border)',
+                borderLeft: `4px solid ${getAlertBorderColor(alert.level)}`,
+                boxShadow: 'var(--nb-shadow-sm)',
                 padding: '1rem',
               }}
             >

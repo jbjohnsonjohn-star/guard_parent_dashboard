@@ -8,13 +8,14 @@ import {
   Bell, 
   Clock, 
   Settings, 
-  Watch, 
+  Menu,
   ChevronLeft,
   ChevronRight,
   Plus,
   LogOut,
   X,
-  AlertTriangle
+  AlertTriangle,
+  Smartphone
 } from 'lucide-react';
 import { WardMessage, useWardWebSocket } from '@/hooks/useWardWebSocket';
 import DeviceCard from '@/components/DeviceCard';
@@ -451,28 +452,13 @@ export default function Dashboard() {
       {/* Desktop Sidebar */}
       <aside className={`dashboard-sidebar ${sidebarCollapsed ? 'collapsed' : ''}`}>
         {/* Logo */}
-        <div style={{ padding: '1.25rem', borderBottom: '1px solid var(--dashboard-border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ padding: '1.25rem', borderBottom: 'var(--nb-border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div className="sidebar-header-text" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <div style={{ width: 32, height: 32, background: '#1a1a1a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Watch size={18} color="#fff" />
+            <div style={{ width: 32, height: 32, background: '#1a1a1a', border: 'var(--nb-border)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span style={{ color: '#fff', fontWeight: 700, fontSize: '0.875rem' }}>G</span>
             </div>
             <span style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--dashboard-text)' }}>G.U.A.R.D.</span>
           </div>
-          <button
-            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-            style={{
-              background: 'transparent',
-              border: 'none',
-              padding: '0.5rem',
-              cursor: 'pointer',
-              color: 'var(--dashboard-text-muted)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            {sidebarCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
-          </button>
         </div>
 
         {/* Navigation */}
@@ -487,13 +473,14 @@ export default function Dashboard() {
                   display: 'flex',
                   alignItems: 'center',
                   gap: '0.75rem',
-                  padding: sidebarCollapsed ? '0.75rem' : '0.75rem 1rem',
-                  justifyContent: sidebarCollapsed ? 'center' : 'flex-start',
-                  background: isActive ? 'var(--dashboard-bg)' : 'transparent',
-                  color: isActive ? 'var(--dashboard-text)' : 'var(--dashboard-text-muted)',
-                  border: 'none',
+                  padding: '0.75rem 1rem',
+                  justifyContent: 'flex-start',
+                  background: isActive ? 'var(--nb-button)' : 'transparent',
+                  color: isActive ? '#1a1a1a' : 'var(--dashboard-text-muted)',
+                  border: isActive ? 'var(--nb-border)' : 'none',
+                  boxShadow: isActive ? 'var(--nb-shadow-sm)' : 'none',
                   cursor: 'pointer',
-                  fontWeight: isActive ? 600 : 500,
+                  fontWeight: isActive ? 700 : 500,
                   fontSize: '0.875rem',
                   transition: 'all 0.15s ease',
                   textTransform: 'none',
@@ -509,20 +496,21 @@ export default function Dashboard() {
         </nav>
 
         {/* Add Device Button */}
-        <div style={{ padding: '0.75rem', borderTop: '1px solid var(--dashboard-border)' }}>
+        <div style={{ padding: '0.75rem', borderTop: 'var(--nb-border)' }}>
           <button
             onClick={() => setIsAddDeviceModalOpen(true)}
             style={{
               width: '100%',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: sidebarCollapsed ? 'center' : 'flex-start',
+              justifyContent: 'flex-start',
               gap: '0.75rem',
-              padding: sidebarCollapsed ? '0.75rem' : '0.75rem 1rem',
-              background: '#1a1a1a',
-              color: '#fff',
-              border: 'none',
-              fontWeight: 600,
+              padding: '0.75rem 1rem',
+              background: 'var(--nb-button)',
+              color: '#1a1a1a',
+              border: 'var(--nb-border)',
+              boxShadow: 'var(--nb-shadow-sm)',
+              fontWeight: 700,
               fontSize: '0.875rem',
               cursor: 'pointer',
               textTransform: 'none',
@@ -535,9 +523,9 @@ export default function Dashboard() {
         </div>
 
         {/* User Section */}
-        <div style={{ padding: '1rem 0.75rem', borderTop: '1px solid var(--dashboard-border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ padding: '1rem 0.75rem', borderTop: 'var(--nb-border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div className="sidebar-footer-text" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <div style={{ width: 32, height: 32, background: 'var(--dashboard-bg)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 600, fontSize: '0.875rem', color: 'var(--dashboard-text)' }}>
+            <div style={{ width: 32, height: 32, background: 'var(--nb-button)', border: 'var(--nb-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '0.875rem', color: '#1a1a1a' }}>
               {(name || 'U').charAt(0).toUpperCase()}
             </div>
             <span style={{ fontWeight: 500, fontSize: '0.875rem', color: 'var(--dashboard-text)' }}>{name || 'User'}</span>
@@ -564,8 +552,23 @@ export default function Dashboard() {
       {/* Main Content */}
       <main className={`dashboard-main ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
         {/* Top Bar */}
-        <header className="dashboard-topbar">
+        <header className="dashboard-topbar" style={{ borderBottom: 'var(--nb-border)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <button
+              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                padding: '0.5rem',
+                cursor: 'pointer',
+                color: 'var(--dashboard-text)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Menu size={22} />
+            </button>
             <h1 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--dashboard-text)', margin: 0 }}>
               {navItems.find(n => n.id === activeTab)?.label || 'Dashboard'}
             </h1>
@@ -692,13 +695,14 @@ export default function Dashboard() {
               {devices.length === 0 ? (
                 <div style={{ 
                   background: 'var(--dashboard-card)', 
-                  border: '1px solid var(--dashboard-border)',
+                  border: 'var(--nb-border)',
+                  boxShadow: 'var(--nb-shadow)',
                   padding: '3rem',
                   textAlign: 'center',
                   maxWidth: 480,
                   margin: '0 auto',
                 }}>
-                  <Watch size={32} style={{ color: 'var(--dashboard-text-muted)', marginBottom: '1rem' }} />
+                  <Smartphone size={32} style={{ color: 'var(--dashboard-text-muted)', marginBottom: '1rem' }} />
                   <h3 style={{ fontSize: '1.125rem', fontWeight: 600, color: 'var(--dashboard-text)', marginBottom: '0.5rem' }}>
                     No devices connected
                   </h3>
@@ -708,11 +712,12 @@ export default function Dashboard() {
                   <button
                     onClick={() => setIsAddDeviceModalOpen(true)}
                     style={{
-                      background: '#1a1a1a',
-                      color: '#fff',
+                      background: 'var(--nb-button)',
+                      color: '#1a1a1a',
                       padding: '0.75rem 1.5rem',
-                      border: 'none',
-                      fontWeight: 600,
+                      border: 'var(--nb-border)',
+                      boxShadow: 'var(--nb-shadow-sm)',
+                      fontWeight: 700,
                       fontSize: '0.875rem',
                       cursor: 'pointer',
                     }}

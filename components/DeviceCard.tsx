@@ -42,7 +42,8 @@ function DeviceCard({
         cursor: 'pointer',
         display: 'block',
         background: 'var(--dashboard-card)',
-        border: '1px solid var(--dashboard-border)',
+        border: 'var(--nb-border)',
+        boxShadow: 'var(--nb-shadow)',
       }}
     >
       {/* Header */}
@@ -51,13 +52,14 @@ function DeviceCard({
           <div style={{ 
             width: 40, 
             height: 40, 
-            background: 'var(--dashboard-bg)', 
+            background: 'var(--nb-button)', 
+            border: 'var(--nb-border)',
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: 'center',
             fontWeight: 700,
             fontSize: '1rem',
-            color: 'var(--dashboard-text)',
+            color: '#1a1a1a',
           }}>
             {device.childName.charAt(0).toUpperCase()}
           </div>
