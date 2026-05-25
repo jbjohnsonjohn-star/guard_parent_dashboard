@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, Watch, LogOut } from 'lucide-react';
 import { PairedDevice } from '@/types/device';
 
 interface SettingsViewProps {
@@ -18,220 +18,219 @@ export default function SettingsView({
   devices,
   onOpenAddDevice,
   onRemoveDevice,
-  darkMode,
-  onDarkModeChange,
   selectedDeviceId,
   onLogout,
 }: SettingsViewProps) {
   const [pendingRemoveId, setPendingRemoveId] = useState<string | null>(null);
 
   return (
-    <div style={{ flex: 1, overflowY: 'auto', paddingBottom: '7rem', background: 'var(--nb-navy)' }}>
-      <div style={{ padding: '1.5rem', marginBottom: '1rem' }}>
-        <h1 style={{ fontSize: '2rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'white', margin: 0 }}>
-          Settings
-        </h1>
-      </div>
+    <div style={{ flex: 1, maxWidth: 640 }}>
+      {/* Device Management Section */}
+      <div style={{ marginBottom: '2rem' }}>
+        <p style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--dashboard-text-muted)', marginBottom: '1rem', textTransform: 'uppercase', letterSpacing: '0.02em' }}>
+          Device Management
+        </p>
 
-      <div style={{ padding: '1.5rem', display: 'grid', gap: '2rem', paddingBottom: '2rem' }}>
-        {/* Device Management Section */}
+        {/* Add Device Button */}
+        <div style={{ 
+          background: 'var(--dashboard-card)', 
+          border: '1px solid var(--dashboard-border)',
+          padding: '1.25rem',
+          marginBottom: '1rem',
+        }}>
+          <p style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--dashboard-text)', marginBottom: '0.75rem' }}>
+            Add Another Device
+          </p>
+          <button
+            onClick={onOpenAddDevice}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.5rem',
+              width: '100%',
+              padding: '0.75rem',
+              background: '#1a1a1a',
+              color: '#fff',
+              border: 'none',
+              fontWeight: 600,
+              fontSize: '0.875rem',
+              cursor: 'pointer',
+              textTransform: 'none',
+              letterSpacing: 0,
+            }}
+          >
+            <Plus size={18} />
+            Add Device
+          </button>
+        </div>
+
+        {/* Connected Devices List */}
         <div>
-          <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'white', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '1rem', margin: 0 }}>
-            Device Management
+          <p style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--dashboard-text-muted)', marginBottom: '0.75rem' }}>
+            Connected Devices ({devices.length})
           </p>
 
-          {/* Add Device Button */}
-          <div className="nb-card" style={{ marginBottom: '1.5rem' }}>
-            <h2 style={{ fontSize: '1.125rem', fontWeight: 900, color: '#333333', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '1rem', margin: 0 }}>
-              Add Another Device
-            </h2>
-            <button
-              onClick={onOpenAddDevice}
-              style={{
-                width: '100%',
-                backgroundColor: 'var(--nb-brand)',
-                color: 'var(--nb-navy)',
-                padding: '0.75rem',
-                fontWeight: 700,
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em',
-                border: '2px solid var(--nb-brand)',
-                boxShadow: '6px 6px 0px 0px rgba(0, 0, 0, 1)',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '0.5rem',
-                transition: 'all 0.15s ease',
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.transform = 'translate(-2px, -2px)';
-                (e.currentTarget as HTMLElement).style.boxShadow = '8px 8px 0px 0px rgba(0, 0, 0, 1)';
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.transform = 'translate(0, 0)';
-                (e.currentTarget as HTMLElement).style.boxShadow = '6px 6px 0px 0px rgba(0, 0, 0, 1)';
-              }}
-            >
-              <Plus size={18} />
-              Add Device
-            </button>
-          </div>
-
-          {/* Connected Devices List */}
-          <div>
-            <p style={{ fontSize: '0.875rem', fontWeight: 700, color: 'white', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '1rem', margin: 0 }}>
-              Connected Devices ({devices.length})
-            </p>
-
-            <div style={{ display: 'grid', gap: '0.75rem' }}>
-              {devices.length === 0 ? (
-                <p style={{ fontSize: '0.875rem', color: '#999999', margin: 0 }}>
-                  No devices paired yet
-                </p>
-              ) : (
-                devices.map(device => (
-                  <div
-                    key={device.id}
-                    className="nb-card"
-                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
-                  >
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            {devices.length === 0 ? (
+              <p style={{ fontSize: '0.875rem', color: 'var(--dashboard-text-muted)' }}>
+                No devices paired yet
+              </p>
+            ) : (
+              devices.map(device => (
+                <div
+                  key={device.id}
+                  style={{
+                    background: 'var(--dashboard-card)',
+                    border: '1px solid var(--dashboard-border)',
+                    padding: '1rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <div style={{ 
+                      width: 36, 
+                      height: 36, 
+                      background: 'var(--dashboard-bg)', 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center' 
+                    }}>
+                      <Watch size={18} color="var(--dashboard-text)" />
+                    </div>
                     <div>
-                      <p style={{ fontWeight: 700, fontSize: '0.875rem', color: '#333333', margin: 0, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                      <p style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--dashboard-text)', margin: 0 }}>
                         {device.childName}
                         {selectedDeviceId === device.id && (
-                          <span style={{ marginLeft: '0.5rem', fontSize: '0.625rem', fontWeight: 900, color: 'var(--nb-secure)', textTransform: 'uppercase' }}>
-                            ACTIVE
+                          <span style={{ marginLeft: '0.5rem', fontSize: '0.625rem', fontWeight: 600, color: '#22c55e', textTransform: 'uppercase' }}>
+                            Active
                           </span>
                         )}
                       </p>
-                      <p style={{ fontSize: '0.75rem', marginTop: '0.25rem', fontFamily: 'monospace', color: '#999999', margin: '0.25rem 0 0 0' }} className="nb-mono">
+                      <p style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--dashboard-text-muted)', margin: '0.125rem 0 0 0' }}>
                         {device.pairingCode}
                       </p>
                     </div>
-                    <button
-                      onClick={() => setPendingRemoveId(device.id)}
-                      style={{
-                        background: 'transparent',
-                        border: 'none',
-                        cursor: 'pointer',
-                        color: '#ef4444',
-                        padding: '0.5rem',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        transition: 'color 0.15s ease',
-                      }}
-                      onMouseEnter={(e) => {
-                        (e.currentTarget as HTMLElement).style.color = '#ff6b6b';
-                      }}
-                      onMouseLeave={(e) => {
-                        (e.currentTarget as HTMLElement).style.color = '#ef4444';
-                      }}
-                    >
-                      <Trash2 size={18} />
-                    </button>
                   </div>
-                ))
-              )}
-            </div>
+                  <button
+                    onClick={() => setPendingRemoveId(device.id)}
+                    style={{
+                      background: 'transparent',
+                      border: 'none',
+                      padding: '0.5rem',
+                      cursor: 'pointer',
+                      color: '#ef4444',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                </div>
+              ))
+            )}
           </div>
         </div>
+      </div>
 
-        {/* About Section */}
-        <div>
-          <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'white', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '1rem', margin: 0 }}>
-            About
-          </p>
+      {/* About Section */}
+      <div style={{ marginBottom: '2rem' }}>
+        <p style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--dashboard-text-muted)', marginBottom: '1rem', textTransform: 'uppercase', letterSpacing: '0.02em' }}>
+          About
+        </p>
 
-          <div className="nb-card">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-              <span style={{ fontSize: '0.875rem', color: '#666666' }}>
-                App Version
-              </span>
-              <span style={{ fontWeight: 700, fontSize: '0.875rem', color: '#333333', textTransform: 'uppercase' }}>
-                1.0.0
-              </span>
-            </div>
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                borderTop: '2px solid #000000',
-                paddingTop: '1rem',
-              }}
-            >
-              <span style={{ fontSize: '0.875rem', color: '#666666' }}>
-                Total Devices
-              </span>
-              <span style={{ fontWeight: 700, fontSize: '0.875rem', color: '#333333', textTransform: 'uppercase' }}>
-                {devices.length}
-              </span>
-            </div>
+        <div style={{ 
+          background: 'var(--dashboard-card)', 
+          border: '1px solid var(--dashboard-border)',
+          padding: '1rem',
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '0.75rem', borderBottom: '1px solid var(--dashboard-border)' }}>
+            <span style={{ fontSize: '0.875rem', color: 'var(--dashboard-text-muted)' }}>
+              App Version
+            </span>
+            <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--dashboard-text)' }}>
+              1.0.0
+            </span>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.75rem' }}>
+            <span style={{ fontSize: '0.875rem', color: 'var(--dashboard-text-muted)' }}>
+              Total Devices
+            </span>
+            <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--dashboard-text)' }}>
+              {devices.length}
+            </span>
           </div>
         </div>
+      </div>
 
-        {/* Logout Button */}
-        <div>
-          <button
-            onClick={onLogout}
-            style={{
-              width: '100%',
-              backgroundColor: 'var(--nb-critical-abduction)',
-              color: 'white',
-              padding: '0.875rem',
-              fontWeight: 700,
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em',
-              border: '2px solid var(--nb-critical-abduction)',
-              boxShadow: '8px 8px 0px 0px rgba(0, 0, 0, 1)',
-              cursor: 'pointer',
-              transition: 'all 0.15s ease',
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLElement).style.transform = 'translate(-2px, -2px)';
-              (e.currentTarget as HTMLElement).style.boxShadow = '10px 10px 0px 0px rgba(0, 0, 0, 1)';
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLElement).style.transform = 'translate(0, 0)';
-              (e.currentTarget as HTMLElement).style.boxShadow = '8px 8px 0px 0px rgba(0, 0, 0, 1)';
-            }}
-          >
-            Logout
-          </button>
-        </div>
+      {/* Logout Button */}
+      <div>
+        <button
+          onClick={onLogout}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '0.5rem',
+            width: '100%',
+            padding: '0.875rem',
+            background: '#ef4444',
+            color: '#fff',
+            border: 'none',
+            fontWeight: 600,
+            fontSize: '0.875rem',
+            cursor: 'pointer',
+            textTransform: 'none',
+            letterSpacing: 0,
+          }}
+        >
+          <LogOut size={18} />
+          Logout
+        </button>
       </div>
 
       {/* Remove Device Modal */}
       {pendingRemoveId && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 50, background: 'rgba(0, 0, 0, 0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1.5rem' }}>
-          <div className="nb-card" style={{ width: '100%', maxWidth: '400px' }}>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 900, color: '#333333', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.5rem', margin: 0 }}>
+        <div style={{ 
+          position: 'fixed', 
+          inset: 0, 
+          zIndex: 50, 
+          background: 'rgba(0, 0, 0, 0.4)', 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center', 
+          padding: '1.5rem' 
+        }}>
+          <div style={{ 
+            background: 'var(--dashboard-card)', 
+            border: '1px solid var(--dashboard-border)',
+            boxShadow: 'var(--nb-shadow)',
+            padding: '1.5rem',
+            width: '100%',
+            maxWidth: 400,
+          }}>
+            <h3 style={{ fontSize: '1.125rem', fontWeight: 600, color: 'var(--dashboard-text)', marginBottom: '0.5rem' }}>
               Remove Device?
             </h3>
-            <p style={{ fontSize: '0.875rem', marginTop: '0.5rem', color: '#666666', margin: '0.5rem 0 0 0' }}>
+            <p style={{ fontSize: '0.875rem', color: 'var(--dashboard-text-muted)', marginBottom: '1.5rem' }}>
               This will stop monitoring updates for it.
             </p>
-            <div style={{ marginTop: '1.5rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
               <button
                 onClick={() => setPendingRemoveId(null)}
                 style={{
                   padding: '0.75rem',
-                  background: 'white',
-                  color: '#333333',
-                  border: '2px solid #000000',
-                  fontWeight: 700,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
+                  background: 'var(--dashboard-card)',
+                  color: 'var(--dashboard-text)',
+                  border: '1px solid var(--dashboard-border)',
+                  fontWeight: 600,
+                  fontSize: '0.875rem',
                   cursor: 'pointer',
-                  transition: 'all 0.15s ease',
-                }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.background = '#f5f5f5';
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.background = 'white';
+                  textTransform: 'none',
+                  letterSpacing: 0,
                 }}
               >
                 Cancel
@@ -243,20 +242,14 @@ export default function SettingsView({
                 }}
                 style={{
                   padding: '0.75rem',
-                  backgroundColor: 'var(--nb-critical-abduction)',
-                  color: 'white',
-                  border: '2px solid var(--nb-critical-abduction)',
-                  fontWeight: 700,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
+                  background: '#ef4444',
+                  color: '#fff',
+                  border: 'none',
+                  fontWeight: 600,
+                  fontSize: '0.875rem',
                   cursor: 'pointer',
-                  transition: 'all 0.15s ease',
-                }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.background = '#ff6b6b';
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.background = 'var(--nb-critical-abduction)';
+                  textTransform: 'none',
+                  letterSpacing: 0,
                 }}
               >
                 Remove

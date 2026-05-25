@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { Heart } from 'lucide-react';
+import { Activity, Footprints, Battery, Clock } from 'lucide-react';
 import { PairedDevice } from '@/types/device';
 
 interface DeviceCardProps {
@@ -12,89 +12,119 @@ interface DeviceCardProps {
 
 function DeviceCard({
   device,
-  darkMode,
   formatTimeAgo,
   getChildStatus,
   onClick,
 }: DeviceCardProps) {
-  const getStatusBorderColor = () => {
+  const getStatusColor = () => {
     switch (device.status) {
       case 'online':
-        return 'var(--nb-secure)';
+        return '#22c55e';
       case 'alert':
-        return 'var(--nb-alert-off-route)';
+        return '#f97316';
       case 'offline':
-        return 'var(--nb-critical-abduction)';
+        return '#ef4444';
       default:
-        return '#000000';
+        return '#888888';
     }
   };
 
-  const statusBorderColor = getStatusBorderColor();
+  const statusColor = getStatusColor();
 
   return (
     <button
       onClick={onClick}
+      className="dashboard-card"
       style={{
         width: '100%',
-        background: 'white',
-        border: `2px solid ${statusBorderColor}`,
-        boxShadow: '8px 8px 0px 0px rgba(0, 0, 0, 1)',
-        padding: '1.5rem',
-        transition: 'all 0.15s ease',
+        padding: '1.25rem',
         textAlign: 'left',
         cursor: 'pointer',
         display: 'block',
-      }}
-      onMouseEnter={(e) => {
-        (e.currentTarget as HTMLElement).style.transform = 'translate(-2px, -2px)';
-        (e.currentTarget as HTMLElement).style.boxShadow = '10px 10px 0px 0px rgba(0, 0, 0, 1)';
-      }}
-      onMouseLeave={(e) => {
-        (e.currentTarget as HTMLElement).style.transform = 'translate(0, 0)';
-        (e.currentTarget as HTMLElement).style.boxShadow = '8px 8px 0px 0px rgba(0, 0, 0, 1)';
+        background: 'var(--dashboard-card)',
+        border: '1px solid var(--dashboard-border)',
       }}
     >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
-        <div>
-          <h3 style={{ fontSize: '1.25rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#333333', margin: 0 }}>
-            {device.childName}
-          </h3>
-          <p style={{ fontSize: '0.875rem', color: '#666666', margin: '0.25rem 0 0 0' }}>
-            {getChildStatus(device)}
-          </p>
+      {/* Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <div style={{ 
+            width: 40, 
+            height: 40, 
+            background: 'var(--dashboard-bg)', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center',
+            fontWeight: 700,
+            fontSize: '1rem',
+            color: 'var(--dashboard-text)',
+          }}>
+            {device.childName.charAt(0).toUpperCase()}
+          </div>
+          <div>
+            <h3 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--dashboard-text)', margin: 0 }}>
+              {device.childName}
+            </h3>
+            <p style={{ fontSize: '0.75rem', color: 'var(--dashboard-text-muted)', margin: '0.125rem 0 0 0' }}>
+              {getChildStatus(device)}
+            </p>
+          </div>
         </div>
-        <div style={{ display: 'inline-block', padding: '0.25rem 0.75rem', background: statusBorderColor, color: 'white', fontWeight: 700, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em', border: `2px solid ${statusBorderColor}` }}>
-          {device.status.toUpperCase()}
+        <div style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          gap: '0.375rem',
+          padding: '0.25rem 0.5rem', 
+          background: `${statusColor}15`,
+          color: statusColor, 
+          fontWeight: 600, 
+          fontSize: '0.6875rem', 
+          textTransform: 'uppercase',
+          letterSpacing: '0.02em',
+        }}>
+          <span style={{ width: 6, height: 6, background: statusColor, borderRadius: '50%' }} />
+          {device.status}
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '1.5rem' }}>
-        <div>
-          <p style={{ fontSize: '0.75rem', fontWeight: 700, color: '#999999', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 0.5rem 0' }}>
-            Heart Rate
-          </p>
-          <p style={{ fontSize: '1.875rem', fontWeight: 900, color: '#333333', margin: 0 }}>
-            {device.heartRate}<span style={{ fontSize: '0.875rem', color: '#999999' }}>BPM</span>
-          </p>
+      {/* Stats Grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <Activity size={16} color="var(--nb-critical-abduction)" />
+          <div>
+            <p style={{ fontSize: '0.6875rem', color: 'var(--dashboard-text-muted)', margin: 0 }}>Heart Rate</p>
+            <p style={{ fontSize: '1.125rem', fontWeight: 700, color: 'var(--dashboard-text)', margin: 0 }}>
+              {device.heartRate}<span style={{ fontSize: '0.75rem', fontWeight: 500, color: 'var(--dashboard-text-muted)' }}> bpm</span>
+            </p>
+          </div>
         </div>
-        <div>
-          <p style={{ fontSize: '0.75rem', fontWeight: 700, color: '#999999', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 0.5rem 0' }}>
-            Steps
-          </p>
-          <p style={{ fontSize: '1.875rem', fontWeight: 900, color: '#333333', margin: 0 }}>
-            {device.steps != null ? device.steps : '—'}
-          </p>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <Footprints size={16} color="var(--nb-secure)" />
+          <div>
+            <p style={{ fontSize: '0.6875rem', color: 'var(--dashboard-text-muted)', margin: 0 }}>Steps</p>
+            <p style={{ fontSize: '1.125rem', fontWeight: 700, color: 'var(--dashboard-text)', margin: 0 }}>
+              {device.steps != null ? device.steps.toLocaleString() : '—'}
+            </p>
+          </div>
         </div>
       </div>
 
-      <div style={{ borderTop: '2px solid #000000', paddingTop: '1rem', display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: '#999999', fontWeight: 600 }}>
-        <p style={{ margin: 0 }}>
-          Last: {formatTimeAgo(device.lastSeen)}
-        </p>
-        <p style={{ margin: 0 }}>
-          {device.battery != null ? `${Math.round(device.battery)}%` : '—'}
-        </p>
+      {/* Footer */}
+      <div style={{ 
+        borderTop: '1px solid var(--dashboard-border)', 
+        paddingTop: '0.75rem', 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.75rem', color: 'var(--dashboard-text-muted)' }}>
+          <Clock size={12} />
+          <span>{formatTimeAgo(device.lastSeen)}</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.75rem', color: 'var(--dashboard-text-muted)' }}>
+          <Battery size={12} />
+          <span>{device.battery != null ? `${Math.round(device.battery)}%` : '—'}</span>
+        </div>
       </div>
     </button>
   );

@@ -25,22 +25,21 @@ const createMarkerIcon = (status: string, childName: string) => {
     html: `
       <div style="
         position: relative;
-        width: 48px;
-        height: 48px;
+        width: 40px;
+        height: 40px;
       ">
         <div style="
-          width: 48px;
-          height: 48px;
+          width: 40px;
+          height: 40px;
           background-color: ${color};
-          border-radius: 50%;
-          border: 3px solid white;
           display: flex;
           align-items: center;
           justify-content: center;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-          font-weight: bold;
+          box-shadow: 2px 2px 0px 0px rgba(0,0,0,1);
+          font-weight: 600;
           color: white;
-          font-size: 12px;
+          font-size: 14px;
+          font-family: 'Geist', sans-serif;
         ">
           ${childName.charAt(0).toUpperCase()}
         </div>
@@ -49,15 +48,12 @@ const createMarkerIcon = (status: string, childName: string) => {
             ? `
           <div style="
             position: absolute;
-            width: 64px;
-            height: 64px;
-            border: 2px solid ${color};
-            border-radius: 50%;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            opacity: 0.3;
-            animation: pulse 2s infinite;
+            width: 8px;
+            height: 8px;
+            background: ${color};
+            top: -2px;
+            right: -2px;
+            border: 2px solid white;
           "></div>
         `
             : ''
@@ -65,9 +61,9 @@ const createMarkerIcon = (status: string, childName: string) => {
       </div>
     `,
     className: 'custom-marker',
-    iconSize: [48, 48],
-    iconAnchor: [24, 24],
-    popupAnchor: [0, -24],
+    iconSize: [40, 40],
+    iconAnchor: [20, 20],
+    popupAnchor: [0, -20],
   });
 
   markerIconCache.set(cacheKey, icon);
@@ -102,6 +98,8 @@ interface DeviceMarkerProps {
 const DeviceMarker = memo(function DeviceMarker({ device, onDeviceSelect }: DeviceMarkerProps) {
   if (!device.coordinates) return null;
 
+  const statusColor = device.status === 'online' ? '#22c55e' : device.status === 'alert' ? '#f97316' : '#ef4444';
+
   return (
     <Marker
       key={device.id}
@@ -109,33 +107,44 @@ const DeviceMarker = memo(function DeviceMarker({ device, onDeviceSelect }: Devi
       icon={createMarkerIcon(device.status, device.childName)}
     >
       <Popup>
-        <div className="text-sm">
-          <div className="font-bold mb-2">{device.childName}</div>
-          <div className="space-y-1 text-xs">
-            <div>
-              <span className="font-semibold">Heart Rate:</span> {device.heartRate} BPM
+        <div style={{ fontFamily: 'Geist, sans-serif', minWidth: 160 }}>
+          <div style={{ fontWeight: 600, fontSize: '0.9375rem', marginBottom: '0.5rem', color: '#1a1a1a' }}>
+            {device.childName}
+          </div>
+          <div style={{ display: 'grid', gap: '0.375rem', fontSize: '0.8125rem', color: '#666' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span>Heart Rate</span>
+              <span style={{ fontWeight: 500, color: '#1a1a1a' }}>{device.heartRate} bpm</span>
             </div>
-            <div>
-              <span className="font-semibold">Steps:</span> {device.steps != null ? device.steps : '—'}
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span>Steps</span>
+              <span style={{ fontWeight: 500, color: '#1a1a1a' }}>{device.steps != null ? device.steps.toLocaleString() : '—'}</span>
             </div>
-            <div>
-              <span className="font-semibold">Battery:</span> {device.battery != null ? `${Math.round(device.battery)}%` : '—'}
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span>Battery</span>
+              <span style={{ fontWeight: 500, color: '#1a1a1a' }}>{device.battery != null ? `${Math.round(device.battery)}%` : '—'}</span>
             </div>
-            <div>
-              <span className="font-semibold">Status:</span>{' '}
-              <span className={
-                device.status === 'online' ? 'text-green-600' :
-                device.status === 'alert' ? 'text-orange-600' :
-                'text-red-600'
-              }>
-                {device.status.charAt(0).toUpperCase() + device.status.slice(1)}
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span>Status</span>
+              <span style={{ fontWeight: 500, color: statusColor, textTransform: 'capitalize' }}>
+                {device.status}
               </span>
             </div>
           </div>
           {onDeviceSelect && (
             <button
               onClick={() => onDeviceSelect(device.id)}
-              className="mt-3 w-full bg-blue-600 text-white text-xs py-1 rounded hover:bg-blue-700 transition"
+              style={{
+                marginTop: '0.75rem',
+                width: '100%',
+                background: '#1a1a1a',
+                color: '#fff',
+                padding: '0.5rem',
+                border: 'none',
+                fontSize: '0.75rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
             >
               View Details
             </button>
@@ -146,7 +155,7 @@ const DeviceMarker = memo(function DeviceMarker({ device, onDeviceSelect }: Devi
   );
 });
 
-function GlobalMapView({ devices, darkMode, onDeviceSelect }: GlobalMapViewProps) {
+function GlobalMapView({ devices, onDeviceSelect }: GlobalMapViewProps) {
   const defaultCenter: [number, number] = [40.7128, -74.006];
   const initialViewRef = useRef<{ center: [number, number]; bounds: [number, number][] | null } | null>(null);
 
@@ -175,18 +184,21 @@ function GlobalMapView({ devices, darkMode, onDeviceSelect }: GlobalMapViewProps
   );
 
   return (
-    <div className={`flex-1 overflow-hidden pb-28 flex flex-col ${darkMode ? 'bg-black' : 'bg-white'}`}>
-      <div className="px-6 pt-6 pb-4">
-        <h1 className={`${darkMode ? 'text-white' : 'text-gray-900'} text-3xl font-bold`}>
-          All Devices
-        </h1>
-        <p className={`${darkMode ? 'text-gray-400' : 'text-gray-600'} text-sm mt-1`}>
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+      <div style={{ marginBottom: '1rem' }}>
+        <p style={{ fontSize: '0.875rem', color: 'var(--dashboard-text-muted)' }}>
           {devices.length} device{devices.length !== 1 ? 's' : ''} on map
         </p>
       </div>
 
-      <div className="flex-1 relative">
-        <MapContainer center={initialViewRef.current.center} zoom={12} className="w-full h-full">
+      <div style={{ 
+        flex: 1, 
+        minHeight: 400,
+        background: 'var(--dashboard-card)',
+        border: '1px solid var(--dashboard-border)',
+        overflow: 'hidden',
+      }}>
+        <MapContainer center={initialViewRef.current.center} zoom={12} style={{ width: '100%', height: '100%' }}>
           <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             attribution='&copy; OpenStreetMap contributors'
@@ -198,17 +210,6 @@ function GlobalMapView({ devices, darkMode, onDeviceSelect }: GlobalMapViewProps
           ))}
         </MapContainer>
       </div>
-
-      <style jsx>{`
-        @keyframes pulse {
-          0%, 100% {
-            opacity: 0.3;
-          }
-          50% {
-            opacity: 0;
-          }
-        }
-      `}</style>
     </div>
   );
 }

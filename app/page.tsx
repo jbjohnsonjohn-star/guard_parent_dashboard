@@ -2,7 +2,20 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
-import { Heart, MapPin, AlertCircle, Settings, Watch, Clock } from 'lucide-react';
+import { 
+  Activity, 
+  Map, 
+  Bell, 
+  Clock, 
+  Settings, 
+  Watch, 
+  ChevronLeft,
+  ChevronRight,
+  Plus,
+  LogOut,
+  X,
+  AlertTriangle
+} from 'lucide-react';
 import { WardMessage, useWardWebSocket } from '@/hooks/useWardWebSocket';
 import DeviceCard from '@/components/DeviceCard';
 import AlertsFeed from '@/components/AlertsFeed';
@@ -46,9 +59,23 @@ export default function Dashboard() {
   const [allAlerts, setAllAlerts] = useState<DeviceAlert[]>([]);
   const [expandedDeviceId, setExpandedDeviceId] = useState<string | null>(null);
   const [isAddDeviceModalOpen, setIsAddDeviceModalOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [alertDropdownOpen, setAlertDropdownOpen] = useState(false);
   const alertCounterRef = useRef(0);
   const isHydratedRef = useRef(false);
+  const alertDropdownRef = useRef<HTMLDivElement>(null);
   const deviceIds = useMemo(() => devices.map((device) => device.id), [devices]);
+
+  // Close alert dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (alertDropdownRef.current && !alertDropdownRef.current.contains(event.target as Node)) {
+        setAlertDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   useEffect(() => {
     if (!ready || !isAuthenticated || !token || !userId) return;
@@ -86,7 +113,7 @@ export default function Dashboard() {
         setDevices(mapped);
         setSelectedDeviceId(mapped.length > 0 ? mapped[0].id : null);
       } catch {
-        // Ignore transient load issues; local cache still exists.
+        // Ignore transient load issues
       }
     };
     void loadDevices();
@@ -260,9 +287,9 @@ export default function Dashboard() {
   };
 
   const navItems = useMemo(() => [
-    { id: 'home' as const, icon: Heart, label: 'Home' },
-    { id: 'map' as const, icon: MapPin, label: 'Map' },
-    { id: 'alerts' as const, icon: AlertCircle, label: 'Alerts' },
+    { id: 'home' as const, icon: Activity, label: 'Overview' },
+    { id: 'map' as const, icon: Map, label: 'Map' },
+    { id: 'alerts' as const, icon: Bell, label: 'Alerts' },
     { id: 'history' as const, icon: Clock, label: 'History' },
     { id: 'settings' as const, icon: Settings, label: 'Settings' },
   ], []);
@@ -270,6 +297,11 @@ export default function Dashboard() {
   const selectedDevice = useMemo(
     () => devices.find((device) => device.id === expandedDeviceId) || null,
     [devices, expandedDeviceId]
+  );
+
+  const unresolvedAlerts = useMemo(
+    () => allAlerts.filter(a => a.level === 'critical' || a.level === 'warning').slice(0, 3),
+    [allAlerts]
   );
 
   useEffect(() => {
@@ -291,7 +323,6 @@ export default function Dashboard() {
     if (!token) throw new Error('Unable to connect to server');
     const normalizedName = name.trim() || 'Test Child';
     
-    // Decode JWT to get userId
     let userId: string | null = null;
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
@@ -411,93 +442,41 @@ export default function Dashboard() {
     logout();
   }, [logout]);
 
-  const homeView = (
-    <div style={{ flex: 1, overflowY: 'auto', paddingBottom: '7rem', background: 'var(--nb-navy)' }}>
-      <div style={{ padding: '1.5rem', marginBottom: '1rem' }}>
-        <p style={{ fontSize: '0.875rem', color: 'var(--nb-brand)', fontWeight: 700, margin: '0 0 0.5rem 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-          Welcome back{name ? ', ' + name : ''}
-        </p>
-        <h1 style={{ fontSize: '2rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'white', margin: 0 }}>
-          Devices
-        </h1>
-      </div>
-
-      <div style={{ padding: '1.5rem', display: 'grid', gridTemplateColumns: '1fr', gap: '1rem', paddingBottom: '2rem' }}>
-        {devices.length === 0 ? (
-          <div className="nb-card-navy" style={{ padding: '3rem 1.5rem', textAlign: 'center', border: '2px solid white' }}>
-            <Watch style={{ width: '2rem', height: '2rem', margin: '0 auto 1rem', color: 'white' }} />
-            <p style={{ fontSize: '1.125rem', fontWeight: 700, color: 'white', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 0.5rem 0' }}>
-              No devices connected
-            </p>
-            <p style={{ fontSize: '0.875rem', color: '#cccccc', margin: '0 0 1.5rem 0' }}>
-              Add a device to start monitoring
-            </p>
-            <button
-              onClick={() => setIsAddDeviceModalOpen(true)}
-              style={{
-                backgroundColor: 'var(--nb-brand)',
-                color: 'var(--nb-navy)',
-                padding: '0.75rem 1.25rem',
-                fontWeight: 700,
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em',
-                border: '2px solid var(--nb-brand)',
-                boxShadow: '6px 6px 0px 0px rgba(0, 0, 0, 1)',
-                cursor: 'pointer',
-                transition: 'all 0.15s ease',
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.transform = 'translate(-2px, -2px)';
-                (e.currentTarget as HTMLElement).style.boxShadow = '8px 8px 0px 0px rgba(0, 0, 0, 1)';
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.transform = 'translate(0, 0)';
-                (e.currentTarget as HTMLElement).style.boxShadow = '6px 6px 0px 0px rgba(0, 0, 0, 1)';
-              }}
-            >
-              Add Device
-            </button>
-          </div>
-        ) : (
-          devices.map(device => (
-            <DeviceCard
-              key={device.id}
-              device={device}
-              darkMode={darkMode}
-              formatTimeAgo={formatTimeAgo}
-              getChildStatus={getChildStatus}
-              onClick={() => handleDeviceSelect(device.id)}
-            />
-          ))
-        )}
-      </div>
-    </div>
-  );
-
   if (!ready || !isAuthenticated) {
     return <div className="min-h-screen bg-white" />;
   }
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', background: 'var(--nb-navy)', color: 'white' }}>
-      {/* Desktop Sidebar - Hidden on Mobile */}
-      <div className="desktop-sidebar" style={{
-        width: '260px',
-        flexShrink: 0,
-        flexDirection: 'column',
-        background: '#050a15',
-        borderRight: '2px solid black',
-        padding: '1.5rem',
-        height: '100vh',
-        overflowY: 'auto',
-      }}>
+    <div className="dashboard-layout">
+      {/* Desktop Sidebar */}
+      <aside className={`dashboard-sidebar ${sidebarCollapsed ? 'collapsed' : ''}`}>
         {/* Logo */}
-        <p style={{ fontSize: '1.25rem', fontWeight: 900, color: 'var(--nb-brand)', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 2rem 0' }}>
-          G.U.A.R.D.
-        </p>
+        <div style={{ padding: '1.25rem', borderBottom: '1px solid var(--dashboard-border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div className="sidebar-header-text" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <div style={{ width: 32, height: 32, background: '#1a1a1a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Watch size={18} color="#fff" />
+            </div>
+            <span style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--dashboard-text)' }}>G.U.A.R.D.</span>
+          </div>
+          <button
+            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              padding: '0.5rem',
+              cursor: 'pointer',
+              color: 'var(--dashboard-text-muted)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            {sidebarCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+          </button>
+        </div>
 
         {/* Navigation */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <nav style={{ flex: 1, padding: '1rem 0.75rem', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
           {navItems.map(({ id, icon: Icon, label }) => {
             const isActive = activeTab === id;
             return (
@@ -508,170 +487,285 @@ export default function Dashboard() {
                   display: 'flex',
                   alignItems: 'center',
                   gap: '0.75rem',
-                  padding: '1rem',
-                  background: isActive ? 'var(--nb-brand)' : 'transparent',
-                  color: isActive ? 'var(--nb-navy)' : 'white',
-                  border: isActive ? '2px solid var(--nb-brand)' : '2px solid transparent',
+                  padding: sidebarCollapsed ? '0.75rem' : '0.75rem 1rem',
+                  justifyContent: sidebarCollapsed ? 'center' : 'flex-start',
+                  background: isActive ? 'var(--dashboard-bg)' : 'transparent',
+                  color: isActive ? 'var(--dashboard-text)' : 'var(--dashboard-text-muted)',
+                  border: 'none',
                   cursor: 'pointer',
-                  fontWeight: 700,
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
+                  fontWeight: isActive ? 600 : 500,
                   fontSize: '0.875rem',
                   transition: 'all 0.15s ease',
-                  borderLeft: isActive ? '4px solid var(--nb-brand)' : '4px solid transparent',
-                }}
-                onMouseEnter={(e) => {
-                  if (!isActive) {
-                    (e.currentTarget as HTMLElement).style.background = 'rgba(245, 197, 24, 0.1)';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!isActive) {
-                    (e.currentTarget as HTMLElement).style.background = 'transparent';
-                  }
+                  textTransform: 'none',
+                  letterSpacing: 0,
+                  width: '100%',
                 }}
               >
-                <Icon style={{ width: '1.25rem', height: '1.25rem' }} />
-                <span>{label}</span>
+                <Icon size={20} />
+                <span className="nav-label">{label}</span>
               </button>
             );
           })}
+        </nav>
+
+        {/* Add Device Button */}
+        <div style={{ padding: '0.75rem', borderTop: '1px solid var(--dashboard-border)' }}>
+          <button
+            onClick={() => setIsAddDeviceModalOpen(true)}
+            style={{
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: sidebarCollapsed ? 'center' : 'flex-start',
+              gap: '0.75rem',
+              padding: sidebarCollapsed ? '0.75rem' : '0.75rem 1rem',
+              background: '#1a1a1a',
+              color: '#fff',
+              border: 'none',
+              fontWeight: 600,
+              fontSize: '0.875rem',
+              cursor: 'pointer',
+              textTransform: 'none',
+              letterSpacing: 0,
+            }}
+          >
+            <Plus size={18} />
+            <span className="nav-label">Add Device</span>
+          </button>
         </div>
 
-        {/* User Name at Bottom */}
-        <div style={{ paddingTop: '1.5rem', borderTop: '2px solid black', marginTop: 'auto' }}>
-          <p style={{ fontSize: '0.875rem', fontWeight: 700, color: 'white', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>
-            {name || 'User'}
-          </p>
+        {/* User Section */}
+        <div style={{ padding: '1rem 0.75rem', borderTop: '1px solid var(--dashboard-border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div className="sidebar-footer-text" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div style={{ width: 32, height: 32, background: 'var(--dashboard-bg)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 600, fontSize: '0.875rem', color: 'var(--dashboard-text)' }}>
+              {(name || 'U').charAt(0).toUpperCase()}
+            </div>
+            <span style={{ fontWeight: 500, fontSize: '0.875rem', color: 'var(--dashboard-text)' }}>{name || 'User'}</span>
+          </div>
+          <button
+            onClick={handleLogout}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              padding: '0.5rem',
+              cursor: 'pointer',
+              color: 'var(--dashboard-text-muted)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+            title="Logout"
+          >
+            <LogOut size={18} />
+          </button>
         </div>
-      </div>
+      </aside>
 
-      {/* Main Content Area */}
-      <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        flex: 1,
-        width: '100%',
-        minWidth: 0,
-      }}>
-        {/* Desktop Top Bar - Hidden on Mobile */}
-        <div className="desktop-topbar" style={{
-          padding: '1.5rem',
-          background: 'var(--nb-navy)',
-          borderBottom: '2px solid black',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}>
-          <p style={{ fontSize: '0.875rem', color: 'var(--nb-brand)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>
-            Welcome back{name ? ', ' + name : ''}
-          </p>
-          <Heart style={{ width: '1.5rem', height: '1.5rem', color: 'white' }} />
-        </div>
-
-        {/* Mobile/Desktop Content Container */}
-        <div style={{
-          display: 'flex',
-          justifyContent: 'center',
-          flex: 1,
-          overflowY: 'auto',
-          width: '100%',
-        }}>
-          <div className="content-container" style={{
-            width: '100%',
-            maxWidth: '430px',
-            display: 'flex',
-            flexDirection: 'column',
-          }}>
-            {/* Content */}
-            {activeTab === 'home' && (
-              <div style={{ flex: 1, overflowY: 'auto', paddingBottom: '7rem', background: 'var(--nb-navy)' }}>
-                <div className="mobile-header" style={{ padding: '1.5rem', marginBottom: '1rem' }}>
-                  <p style={{ fontSize: '0.875rem', color: 'var(--nb-brand)', fontWeight: 700, margin: '0 0 0.5rem 0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                    Welcome back{name ? ', ' + name : ''}
-                  </p>
-                  <h1 style={{ fontSize: '2rem', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'white', margin: 0 }}>
-                    Devices
-                  </h1>
-                </div>
-
-                <div className="device-grid" style={{ padding: '1.5rem', display: 'grid', gridTemplateColumns: '1fr', gap: '1rem', paddingBottom: '2rem' }}>
-                  {devices.length === 0 ? (
-                    <div className="nb-card-navy empty-state-span" style={{ padding: '3rem 1.5rem', textAlign: 'center', border: '2px solid white' }}>
-                      <Watch style={{ width: '2rem', height: '2rem', margin: '0 auto 1rem', color: 'white' }} />
-                      <p style={{ fontSize: '1.125rem', fontWeight: 700, color: 'white', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 0.5rem 0' }}>
-                        No devices connected
-                      </p>
-                      <p style={{ fontSize: '0.875rem', color: '#cccccc', margin: '0 0 1.5rem 0' }}>
-                        Add a device to start monitoring
-                      </p>
-                      <button
-                        onClick={() => setIsAddDeviceModalOpen(true)}
-                        style={{
-                          backgroundColor: 'var(--nb-brand)',
-                          color: 'var(--nb-navy)',
-                          padding: '0.75rem 1.25rem',
-                          fontWeight: 700,
-                          textTransform: 'uppercase',
-                          letterSpacing: '0.05em',
-                          border: '2px solid var(--nb-brand)',
-                          boxShadow: '6px 6px 0px 0px rgba(0, 0, 0, 1)',
-                          cursor: 'pointer',
-                          transition: 'all 0.15s ease',
-                        }}
-                        onMouseEnter={(e) => {
-                          (e.currentTarget as HTMLElement).style.transform = 'translate(-2px, -2px)';
-                          (e.currentTarget as HTMLElement).style.boxShadow = '8px 8px 0px 0px rgba(0, 0, 0, 1)';
-                        }}
-                        onMouseLeave={(e) => {
-                          (e.currentTarget as HTMLElement).style.transform = 'translate(0, 0)';
-                          (e.currentTarget as HTMLElement).style.boxShadow = '6px 6px 0px 0px rgba(0, 0, 0, 1)';
-                        }}
-                      >
-                        Add Device
-                      </button>
-                    </div>
-                  ) : (
-                    devices.map(device => (
-                      <DeviceCard
-                        key={device.id}
-                        device={device}
-                        darkMode={darkMode}
-                        formatTimeAgo={formatTimeAgo}
-                        getChildStatus={getChildStatus}
-                        onClick={() => handleDeviceSelect(device.id)}
-                      />
-                    ))
-                  )}
-                </div>
-              </div>
-            )}
-            {activeTab === 'map' && (
-              <GlobalMapView 
-                devices={devices} 
-                darkMode={darkMode}
-                onDeviceSelect={handleDeviceSelect}
-              />
-            )}
-            {activeTab === 'alerts' && <AlertsFeed alerts={allAlerts} darkMode={darkMode} />}
-            {activeTab === 'history' && (
-              <HistoryView token={token} watchId={selectedDeviceId || undefined} darkMode={darkMode} />
-            )}
-            {activeTab === 'settings' && (
-              <SettingsView
-                devices={devices}
-                selectedDeviceId={selectedDeviceId}
-                onOpenAddDevice={() => setIsAddDeviceModalOpen(true)}
-                onRemoveDevice={handleRemoveDevice}
-                darkMode={darkMode}
-                onDarkModeChange={setDarkMode}
-                onLogout={handleLogout}
-              />
+      {/* Main Content */}
+      <main className={`dashboard-main ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
+        {/* Top Bar */}
+        <header className="dashboard-topbar">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <h1 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--dashboard-text)', margin: 0 }}>
+              {navItems.find(n => n.id === activeTab)?.label || 'Dashboard'}
+            </h1>
+            {isConnected && (
+              <span style={{ fontSize: '0.75rem', color: 'var(--nb-secure)', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                <span style={{ width: 6, height: 6, background: 'var(--nb-secure)', borderRadius: '50%' }} />
+                Live
+              </span>
             )}
           </div>
-        </div>
-      </div>
 
-      {/* Device Detail Modal */}
+          {/* Alert Bell with Dropdown */}
+          <div style={{ position: 'relative' }} ref={alertDropdownRef}>
+            <button
+              onClick={() => setAlertDropdownOpen(!alertDropdownOpen)}
+              style={{
+                position: 'relative',
+                background: 'transparent',
+                border: 'none',
+                padding: '0.5rem',
+                cursor: 'pointer',
+                color: 'var(--dashboard-text)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Bell size={20} />
+              {unresolvedAlerts.length > 0 && (
+                <span style={{
+                  position: 'absolute',
+                  top: 2,
+                  right: 2,
+                  width: 16,
+                  height: 16,
+                  background: 'var(--nb-critical-abduction)',
+                  borderRadius: '50%',
+                  fontSize: '0.625rem',
+                  fontWeight: 700,
+                  color: '#fff',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                  {unresolvedAlerts.length}
+                </span>
+              )}
+            </button>
+
+            {/* Alert Dropdown */}
+            {alertDropdownOpen && (
+              <div className="alert-dropdown">
+                <div style={{ padding: '0.75rem 1rem', borderBottom: '1px solid var(--dashboard-border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span style={{ fontWeight: 600, fontSize: '0.875rem', color: 'var(--dashboard-text)' }}>Recent Alerts</span>
+                  <button
+                    onClick={() => setAlertDropdownOpen(false)}
+                    style={{ background: 'transparent', border: 'none', padding: '0.25rem', cursor: 'pointer', color: 'var(--dashboard-text-muted)' }}
+                  >
+                    <X size={16} />
+                  </button>
+                </div>
+                {unresolvedAlerts.length === 0 ? (
+                  <div style={{ padding: '1.5rem 1rem', textAlign: 'center', color: 'var(--dashboard-text-muted)', fontSize: '0.875rem' }}>
+                    No recent alerts
+                  </div>
+                ) : (
+                  <div>
+                    {unresolvedAlerts.map((alert) => (
+                      <div
+                        key={alert.id}
+                        style={{
+                          padding: '0.75rem 1rem',
+                          borderBottom: '1px solid var(--dashboard-border)',
+                          display: 'flex',
+                          gap: '0.75rem',
+                          alignItems: 'flex-start',
+                        }}
+                      >
+                        <AlertTriangle
+                          size={16}
+                          color={alert.level === 'critical' ? 'var(--nb-critical-abduction)' : 'var(--nb-alert-off-route)'}
+                          style={{ flexShrink: 0, marginTop: 2 }}
+                        />
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <p style={{ fontSize: '0.8125rem', fontWeight: 500, color: 'var(--dashboard-text)', margin: 0 }}>
+                            {alert.childName}
+                          </p>
+                          <p style={{ fontSize: '0.75rem', color: 'var(--dashboard-text-muted)', margin: '0.125rem 0 0 0' }}>
+                            {alert.message}
+                          </p>
+                          <p style={{ fontSize: '0.6875rem', color: 'var(--nb-gray-muted)', margin: '0.25rem 0 0 0' }}>
+                            {formatTimeAgo(alert.timestamp)}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                    <button
+                      onClick={() => { setAlertDropdownOpen(false); handleTabChange('alerts'); }}
+                      style={{
+                        width: '100%',
+                        padding: '0.75rem 1rem',
+                        background: 'transparent',
+                        border: 'none',
+                        color: 'var(--dashboard-text)',
+                        fontSize: '0.8125rem',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        textAlign: 'center',
+                      }}
+                    >
+                      View All Alerts
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </header>
+
+        {/* Content Area */}
+        <div className="dashboard-content">
+          {activeTab === 'home' && (
+            <div>
+              {devices.length === 0 ? (
+                <div style={{ 
+                  background: 'var(--dashboard-card)', 
+                  border: '1px solid var(--dashboard-border)',
+                  padding: '3rem',
+                  textAlign: 'center',
+                  maxWidth: 480,
+                  margin: '0 auto',
+                }}>
+                  <Watch size={32} style={{ color: 'var(--dashboard-text-muted)', marginBottom: '1rem' }} />
+                  <h3 style={{ fontSize: '1.125rem', fontWeight: 600, color: 'var(--dashboard-text)', marginBottom: '0.5rem' }}>
+                    No devices connected
+                  </h3>
+                  <p style={{ fontSize: '0.875rem', color: 'var(--dashboard-text-muted)', marginBottom: '1.5rem' }}>
+                    Add a device to start monitoring
+                  </p>
+                  <button
+                    onClick={() => setIsAddDeviceModalOpen(true)}
+                    style={{
+                      background: '#1a1a1a',
+                      color: '#fff',
+                      padding: '0.75rem 1.5rem',
+                      border: 'none',
+                      fontWeight: 600,
+                      fontSize: '0.875rem',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Add Device
+                  </button>
+                </div>
+              ) : (
+                <div className="device-grid" style={{ display: 'grid', gap: '1rem' }}>
+                  {devices.map(device => (
+                    <DeviceCard
+                      key={device.id}
+                      device={device}
+                      darkMode={darkMode}
+                      formatTimeAgo={formatTimeAgo}
+                      getChildStatus={getChildStatus}
+                      onClick={() => handleDeviceSelect(device.id)}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+          
+          {activeTab === 'map' && (
+            <GlobalMapView 
+              devices={devices} 
+              darkMode={darkMode}
+              onDeviceSelect={handleDeviceSelect}
+            />
+          )}
+          
+          {activeTab === 'alerts' && <AlertsFeed alerts={allAlerts} darkMode={darkMode} />}
+          
+          {activeTab === 'history' && (
+            <HistoryView token={token} watchId={selectedDeviceId || undefined} darkMode={darkMode} />
+          )}
+          
+          {activeTab === 'settings' && (
+            <SettingsView
+              devices={devices}
+              selectedDeviceId={selectedDeviceId}
+              onOpenAddDevice={() => setIsAddDeviceModalOpen(true)}
+              onRemoveDevice={handleRemoveDevice}
+              darkMode={darkMode}
+              onDarkModeChange={setDarkMode}
+              onLogout={handleLogout}
+            />
+          )}
+        </div>
+      </main>
+
+      {/* Device Detail Panel */}
       {selectedDevice !== null && (
         <DeviceDetailView
           device={selectedDevice}
@@ -683,19 +777,11 @@ export default function Dashboard() {
         />
       )}
 
-      {/* Bottom Navigation - Mobile Only (Hidden on Desktop) */}
-      <div className="mobile-bottom-nav" style={{ display: 'flex', position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 50, justifyContent: 'center', pointerEvents: 'none' }}>
+      {/* Mobile Bottom Navigation */}
+      <div className="mobile-bottom-nav" style={{ display: 'none', position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 50, justifyContent: 'center', pointerEvents: 'none' }}>
         <div style={{ maxWidth: '430px', width: '100%', pointerEvents: 'auto' }}>
-          <div
-            style={{
-              margin: '1.25rem',
-              marginTop: '1rem',
-              border: '2px solid white',
-              boxShadow: '8px 8px 0px 0px rgba(0, 0, 0, 1)',
-              background: 'var(--nb-navy)',
-            }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center', padding: '1rem 0.5rem' }}>
+          <div style={{ margin: '1rem', border: '2px solid #1a1a1a', boxShadow: '4px 4px 0px 0px rgba(0, 0, 0, 1)', background: '#fff' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center', padding: '0.75rem 0.5rem' }}>
               {navItems.map(({ id, icon: Icon, label }) => {
                 const isActive = activeTab === id;
                 return (
@@ -706,21 +792,19 @@ export default function Dashboard() {
                       display: 'flex',
                       flexDirection: 'column',
                       alignItems: 'center',
-                      gap: '0.5rem',
+                      gap: '0.25rem',
                       padding: '0.5rem',
-                      background: isActive ? 'var(--nb-brand)' : 'transparent',
-                      color: isActive ? 'var(--nb-navy)' : 'white',
-                      border: isActive ? '2px solid var(--nb-brand)' : 'none',
+                      background: isActive ? '#1a1a1a' : 'transparent',
+                      color: isActive ? '#fff' : '#1a1a1a',
+                      border: 'none',
                       cursor: 'pointer',
-                      fontSize: '0.75rem',
-                      fontWeight: 700,
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.05em',
-                      transition: 'all 0.15s ease',
-                      borderLeft: isActive ? '3px solid var(--nb-brand)' : 'none',
+                      fontSize: '0.625rem',
+                      fontWeight: 600,
+                      textTransform: 'none',
+                      letterSpacing: 0,
                     }}
                   >
-                    <Icon style={{ width: '1.25rem', height: '1.25rem' }} />
+                    <Icon size={20} />
                     <span>{label}</span>
                   </button>
                 );

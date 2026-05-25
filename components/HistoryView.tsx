@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Calendar, TrendingUp, Battery } from 'lucide-react';
+import { TrendingUp, Battery } from 'lucide-react';
 
 interface TelemetryLog {
   id: string;
@@ -17,7 +17,7 @@ interface HistoryViewProps {
   darkMode?: boolean;
 }
 
-export default function HistoryView({ token, watchId, darkMode }: HistoryViewProps) {
+export default function HistoryView({ token, watchId }: HistoryViewProps) {
   const [telemetry, setTelemetry] = useState<TelemetryLog[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedRange, setSelectedRange] = useState<'24h' | '7d' | '30d'>('24h');
@@ -62,124 +62,129 @@ export default function HistoryView({ token, watchId, darkMode }: HistoryViewPro
   const maxBattery = telemetry.length > 0 ? Math.max(...telemetry.map((log) => log.batteryLevel)) : 0;
 
   return (
-    <div className={`flex-1 overflow-y-auto pb-28 ${darkMode ? 'bg-black' : 'bg-white'}`}>
-      <div className="px-6 pt-6 pb-8">
-        <h1 className={`${darkMode ? 'text-white' : 'text-gray-900'} text-3xl font-bold flex items-center gap-3`}>
-          <Calendar className="w-8 h-8" />
-          History
-        </h1>
-      </div>
-
+    <div style={{ flex: 1 }}>
       {/* Time Range Selector */}
-      <div className="px-6 mb-6">
-        <div className="flex gap-2">
-          {(['24h', '7d', '30d'] as const).map((range) => (
-            <button
-              key={range}
-              onClick={() => setSelectedRange(range)}
-              className={`px-4 py-2 rounded-lg font-semibold transition ${
-                selectedRange === range
-                  ? darkMode
-                    ? 'bg-white text-black'
-                    : 'bg-gray-900 text-white'
-                  : darkMode
-                  ? 'bg-zinc-900 text-gray-300 hover:bg-zinc-800'
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
-            >
-              {range}
-            </button>
-          ))}
-        </div>
+      <div style={{ marginBottom: '1.5rem', display: 'flex', gap: '0.5rem' }}>
+        {(['24h', '7d', '30d'] as const).map((range) => (
+          <button
+            key={range}
+            onClick={() => setSelectedRange(range)}
+            style={{
+              padding: '0.5rem 1rem',
+              background: selectedRange === range ? '#1a1a1a' : 'var(--dashboard-card)',
+              color: selectedRange === range ? '#fff' : 'var(--dashboard-text)',
+              border: '1px solid var(--dashboard-border)',
+              fontWeight: 500,
+              fontSize: '0.8125rem',
+              cursor: 'pointer',
+              textTransform: 'none',
+              letterSpacing: 0,
+            }}
+          >
+            {range}
+          </button>
+        ))}
       </div>
 
       {/* Stats Cards */}
-      <div className="px-6 mb-6 space-y-3">
-        <div
-          className={`p-4 rounded-lg border ${
-            darkMode ? 'bg-zinc-900 border-zinc-800' : 'bg-gray-50 border-gray-200'
-          }`}
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Battery className="w-5 h-5 text-amber-500" />
-              <span className={`text-sm font-semibold ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                Average Battery
-              </span>
-            </div>
-            <span className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-              {avgBattery}%
-            </span>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.75rem', marginBottom: '1.5rem' }}>
+        <div style={{ 
+          background: 'var(--dashboard-card)', 
+          border: '1px solid var(--dashboard-border)',
+          padding: '1rem',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+            <Battery size={16} color="#f59e0b" />
+            <span style={{ fontSize: '0.75rem', color: 'var(--dashboard-text-muted)' }}>Avg Battery</span>
           </div>
+          <p style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--dashboard-text)', margin: 0 }}>
+            {avgBattery}%
+          </p>
         </div>
 
-        <div
-          className={`p-4 rounded-lg border ${
-            darkMode ? 'bg-zinc-900 border-zinc-800' : 'bg-gray-50 border-gray-200'
-          }`}
-        >
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Min</p>
-              <p className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                {minBattery}%
-              </p>
-            </div>
-            <TrendingUp className="w-5 h-5 text-blue-500" />
-            <div className="text-right">
-              <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>Max</p>
-              <p className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                {maxBattery}%
-              </p>
-            </div>
+        <div style={{ 
+          background: 'var(--dashboard-card)', 
+          border: '1px solid var(--dashboard-border)',
+          padding: '1rem',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+            <TrendingUp size={16} color="#ef4444" />
+            <span style={{ fontSize: '0.75rem', color: 'var(--dashboard-text-muted)' }}>Min</span>
           </div>
+          <p style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--dashboard-text)', margin: 0 }}>
+            {minBattery}%
+          </p>
+        </div>
+
+        <div style={{ 
+          background: 'var(--dashboard-card)', 
+          border: '1px solid var(--dashboard-border)',
+          padding: '1rem',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+            <TrendingUp size={16} color="#22c55e" />
+            <span style={{ fontSize: '0.75rem', color: 'var(--dashboard-text-muted)' }}>Max</span>
+          </div>
+          <p style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--dashboard-text)', margin: 0 }}>
+            {maxBattery}%
+          </p>
         </div>
       </div>
 
       {/* Telemetry Timeline */}
-      <div className="px-6 space-y-3">
-        <h2 className={`font-semibold ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+      <div>
+        <p style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--dashboard-text-muted)', marginBottom: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.02em' }}>
           Telemetry Data
-        </h2>
+        </p>
 
         {loading ? (
-          <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+          <p style={{ fontSize: '0.875rem', color: 'var(--dashboard-text-muted)' }}>
             Loading telemetry data...
           </p>
         ) : telemetry.length === 0 ? (
-          <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-            No telemetry data available
-          </p>
+          <div style={{ 
+            background: 'var(--dashboard-card)', 
+            border: '1px solid var(--dashboard-border)',
+            padding: '2rem',
+            textAlign: 'center',
+          }}>
+            <p style={{ color: 'var(--dashboard-text-muted)', fontSize: '0.875rem' }}>
+              No telemetry data available
+            </p>
+          </div>
         ) : (
-          <div className="space-y-2">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
             {telemetry.map((log) => (
               <div
                 key={log.id}
-                className={`p-3 rounded-lg border ${
-                  darkMode ? 'bg-zinc-900 border-zinc-800' : 'bg-gray-50 border-gray-200'
-                }`}
+                style={{
+                  background: 'var(--dashboard-card)',
+                  border: '1px solid var(--dashboard-border)',
+                  padding: '0.75rem 1rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}
               >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className={`text-sm font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                      {formatTime(log.timestamp)}
+                <div>
+                  <p style={{ fontSize: '0.875rem', fontWeight: 500, color: 'var(--dashboard-text)', margin: 0 }}>
+                    {formatTime(log.timestamp)}
+                  </p>
+                  {log.location && (
+                    <p style={{ fontSize: '0.75rem', color: 'var(--dashboard-text-muted)', margin: '0.125rem 0 0 0' }}>
+                      {log.location}
                     </p>
-                    {log.location && (
-                      <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                        📍 {log.location}
-                      </p>
-                    )}
-                  </div>
-                  <div className="text-right">
-                    <div className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                      🔋 {log.batteryLevel}%
-                    </div>
-                    {log.signalStrength && (
-                      <div className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                        Signal: {log.signalStrength}%
-                      </div>
-                    )}
-                  </div>
+                  )}
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <p style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--dashboard-text)', margin: 0 }}>
+                    {log.batteryLevel}%
+                  </p>
+                  {log.signalStrength && (
+                    <p style={{ fontSize: '0.75rem', color: 'var(--dashboard-text-muted)', margin: '0.125rem 0 0 0' }}>
+                      Signal: {log.signalStrength}%
+                    </p>
+                  )}
                 </div>
               </div>
             ))}
