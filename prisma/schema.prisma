@@ -1,0 +1,87 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String?
+  phone        String?
+  createdAt    DateTime @default(now())
+  devices      Device[]
+  watches      UserWatch[]
+  alerts       Alert[]
+  telemetry    TelemetryLog[]
+}
+
+model Device {
+  id          String   @id
+  pairingCode String   @unique
+  deviceName  String
+  isPaired    Boolean  @default(false)
+  parentId    String?
+  parent      User?    @relation(fields: [parentId], references: [id])
+  createdAt   DateTime @default(now())
+}
+
+model Watch {
+  id          String   @id @default(cuid())
+  watchId     String   @unique
+  name        String
+  status      String   @default("offline") // online, offline, low_battery, critical
+  batteryLevel Int     @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  userWatches UserWatch[]
+  alerts      Alert[]
+  telemetry   TelemetryLog[]
+}
+
+model UserWatch {
+  id        String   @id @default(cuid())
+  userId    String
+  watchId   String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  watch     Watch    @relation(fields: [watchId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  
+  @@unique([userId, watchId])
+}
+
+model Alert {
+  id          String   @id @default(cuid())
+  userId      String
+  watchId     String
+  type        String   // sos, low_battery, offline, geofence_breach, unknown_contact
+  severity    String   @default("medium") // low, medium, high, critical
+  message     String
+  isResolved  Boolean  @default(false)
+  resolvedAt  DateTime?
+  notifiedAt  DateTime @default(now())
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  watch       Watch    @relation(fields: [watchId], references: [id], onDelete: Cascade)
+}
+
+model TelemetryLog {
+  id          String   @id @default(cuid())
+  userId      String
+  watchId     String
+  batteryLevel Int
+  location    String?
+  signalStrength Int?
+  timestamp   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  watch       Watch    @relation(fields: [watchId], references: [id], onDelete: Cascade)
+}

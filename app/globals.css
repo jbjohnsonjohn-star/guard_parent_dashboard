@@ -1,0 +1,311 @@
+@import 'tailwindcss';
+
+@theme inline {
+  --font-sans: 'Geist', 'Geist Fallback';
+  --font-mono: 'Geist Mono', 'Geist Mono Fallback';
+}
+
+/* Neobrutalist Design System */
+:root {
+  /* Primary Colors */
+  --nb-navy: #0a0f1e;
+  --nb-white: #ffffff;
+  --nb-gray-light: #f5f5f5;
+  --nb-gray-dark: #333333;
+  
+  /* Semantic Colors */
+  --nb-secure: #22c55e;
+  --nb-critical-freeze: #f59e0b;
+  --nb-critical-abduction: #ef4444;
+  --nb-alert-off-route: #f97316;
+  --nb-brand: #f5c518;
+  
+  /* Effects */
+  --nb-border: 2px solid #000000;
+  --nb-shadow: 8px 8px 0px 0px rgba(0, 0, 0, 1);
+  --nb-shadow-hover: 10px 10px 0px 0px rgba(0, 0, 0, 1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--nb-navy);
+  color: var(--nb-white);
+  font-family: 'Geist', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  background-color: var(--nb-navy);
+}
+
+/* Base Styles */
+input, textarea, select {
+  border: var(--nb-border);
+  background-color: var(--nb-white);
+  color: var(--nb-gray-dark);
+  font-family: inherit;
+  padding: 0.75rem;
+  font-size: 1rem;
+}
+
+input::placeholder, textarea::placeholder {
+  color: #999999;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--nb-brand);
+  box-shadow: 0 0 0 2px var(--nb-navy), 0 0 0 4px var(--nb-brand);
+}
+
+button {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: var(--nb-border);
+  transition: all 0.15s ease;
+  cursor: pointer;
+  font-size: 0.875rem;
+  padding: 0.75rem 1.25rem;
+}
+
+/* Neobrutalist Card */
+.nb-card {
+  border: var(--nb-border);
+  box-shadow: var(--nb-shadow);
+  background-color: var(--nb-white);
+  color: var(--nb-gray-dark);
+  transition: all 0.15s ease;
+  padding: 1.5rem;
+}
+
+.nb-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--nb-shadow-hover);
+}
+
+.nb-card-navy {
+  background-color: var(--nb-navy);
+  color: var(--nb-white);
+  border: 2px solid var(--nb-white);
+}
+
+/* Neobrutalist Pill (Badge) */
+.nb-pill {
+  display: inline-block;
+  border: 2px solid #000000;
+  padding: 0.25rem 0.75rem;
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background-color: var(--nb-white);
+  color: var(--nb-gray-dark);
+}
+
+.nb-pill-secure {
+  background-color: var(--nb-secure);
+  border-color: var(--nb-secure);
+  color: var(--nb-white);
+}
+
+.nb-pill-freeze {
+  background-color: var(--nb-critical-freeze);
+  border-color: var(--nb-critical-freeze);
+  color: var(--nb-navy);
+}
+
+.nb-pill-abduction {
+  background-color: var(--nb-critical-abduction);
+  border-color: var(--nb-critical-abduction);
+  color: var(--nb-white);
+}
+
+.nb-pill-off-route {
+  background-color: var(--nb-alert-off-route);
+  border-color: var(--nb-alert-off-route);
+  color: var(--nb-white);
+}
+
+.nb-pill-brand {
+  background-color: var(--nb-brand);
+  border-color: var(--nb-brand);
+  color: var(--nb-navy);
+}
+
+/* Pulsing Border Animation */
+@keyframes nb-pulse-border {
+  0%, 100% {
+    border-color: var(--nb-critical-abduction);
+    box-shadow: var(--nb-shadow), 0 0 0 3px var(--nb-critical-abduction);
+  }
+  50% {
+    border-color: #ff6b6b;
+    box-shadow: var(--nb-shadow), 0 0 0 6px rgba(239, 68, 68, 0.3);
+  }
+}
+
+.nb-pulse-critical {
+  animation: nb-pulse-border 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  line-height: 1.2;
+  margin: 0;
+}
+
+h1 {
+  font-size: 2.5rem;
+}
+
+h2 {
+  font-size: 2rem;
+}
+
+h3 {
+  font-size: 1.5rem;
+}
+
+p {
+  margin: 0;
+}
+
+/* Utility Classes */
+.text-brand {
+  color: var(--nb-brand);
+}
+
+.text-secure {
+  color: var(--nb-secure);
+}
+
+.text-critical-freeze {
+  color: var(--nb-critical-freeze);
+}
+
+.text-critical-abduction {
+  color: var(--nb-critical-abduction);
+}
+
+.text-alert-off-route {
+  color: var(--nb-alert-off-route);
+}
+
+.border-l-brand {
+  border-left: 4px solid var(--nb-brand);
+}
+
+.border-l-secure {
+  border-left: 4px solid var(--nb-secure);
+}
+
+.border-l-freeze {
+  border-left: 4px solid var(--nb-critical-freeze);
+}
+
+.border-l-abduction {
+  border-left: 4px solid var(--nb-critical-abduction);
+}
+
+.border-l-off-route {
+  border-left: 4px solid var(--nb-alert-off-route);
+}
+
+/* Monospace for data */
+.nb-mono {
+  font-family: 'Geist Mono', monospace;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+}
+
+/* Responsive Layout - Desktop Sidebar */
+@media (min-width: 768px) {
+  /* Desktop sidebar */
+  .desktop-sidebar {
+    display: flex !important;
+  }
+
+  /* Desktop top bar */
+  .desktop-topbar {
+    display: flex !important;
+  }
+
+  /* Hide mobile bottom nav on desktop */
+  .mobile-bottom-nav {
+    display: none !important;
+  }
+
+  /* Remove max-width constraint */
+  .content-container {
+    max-width: none;
+  }
+
+  /* Grid layout for devices */
+  .device-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  /* Hide mobile welcome header */
+  .mobile-header {
+    display: none !important;
+  }
+
+  /* Empty state spans full width on desktop */
+  .empty-state-span {
+    grid-column: 1 / -1;
+  }
+
+  /* Add padding for sidebar */
+  .main-content {
+    margin-left: 0;
+  }
+}
+
+/* 3-column grid on large screens */
+@media (min-width: 1280px) {
+  .device-grid {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+/* Mobile styles */
+@media (max-width: 767px) {
+  .mobile-header {
+    display: block;
+  }
+
+  .desktop-sidebar {
+    display: none;
+  }
+
+  .desktop-topbar {
+    display: none;
+  }
+
+  .mobile-bottom-nav {
+    display: flex;
+  }
+
+  .device-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .content-container {
+    max-width: 430px;
+  }
+
+  /* Hide empty state spanning on mobile */
+  .empty-state-span {
+    grid-column: auto;
+  }
+}
